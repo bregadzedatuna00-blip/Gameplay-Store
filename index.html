@@ -97,7 +97,155 @@ document.querySelectorAll("[data-cat]").forEach(b=>b.onclick=()=>{cat=b.dataset.
 document.getElementById("search").oninput=render;
 document.getElementById("cart").onclick=()=>alert(basket.length?basket.map(p=>p[0]+" — "+p[3]+" ₾").join("\n"):"კალათა ცარიელია");
 render();
+</script><style>
+
+#ai-launcher{
+
+position:fixed;right:20px;bottom:20px;z-index:1000;
+
+background:linear-gradient(135deg,#9747ff,#00d9ff);
+
+color:white;border:0;border-radius:50px;padding:15px 19px;
+
+font-weight:bold;box-shadow:0 0 25px #9747ff66;cursor:pointer
+
+}
+
+#ai-box{
+
+display:none;position:fixed;right:16px;bottom:85px;z-index:1000;
+
+width:min(360px,calc(100vw - 32px));height:470px;max-height:70vh;
+
+background:#10121c;color:white;border:1px solid #47415f;border-radius:18px;
+
+overflow:hidden;box-shadow:0 10px 50px #000b;font-family:Arial,sans-serif
+
+}
+
+#ai-head{padding:16px;background:linear-gradient(100deg,#6935b8,#087d9b);font-weight:bold;display:flex;justify-content:space-between}
+
+#ai-messages{height:320px;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
+
+.ai-msg{padding:10px 12px;border-radius:12px;background:#222536;line-height:1.5;font-size:14px;overflow-wrap:anywhere}
+
+.ai-user{background:#5833a0;align-self:flex-end}
+
+#ai-form{display:flex;gap:6px;padding:10px;border-top:1px solid #303345}
+
+#ai-input{flex:1;min-width:0;background:#1b1e2b;color:white;border:1px solid #41455a;border-radius:9px;padding:11px}
+
+#ai-send{background:#00bfe5;color:#061019;border:0;border-radius:9px;padding:10px;font-weight:bold}
+
+</style>
+
+<button id="ai-launcher">🤖 GamePlay AI</button>
+
+<div id="ai-box">
+
+  <div id="ai-head">
+
+    <span>🤖 GamePlay AI</span>
+
+    <button id="ai-close" style="background:none;color:white;border:0;font-size:20px">✕</button>
+
+  </div>
+
+  <div id="ai-messages">
+
+    <div class="ai-msg">გამარჯობა! 👋 მე GamePlay AI ვარ. დაგეხმარები კომპიუტერის, ლეპტოპის ან PC ნაწილების შერჩევაში. რა ბიუჯეტი გაქვს?</div>
+
+  </div>
+
+  <form id="ai-form">
+
+    <input id="ai-input" placeholder="დაწერე შეკითხვა..." autocomplete="off" required>
+
+    <button id="ai-send" type="submit">➤</button>
+
+  </form>
+
+</div>
+
+<script>
+
+(function(){
+
+const launch=document.getElementById('ai-launcher');
+
+const box=document.getElementById('ai-box');
+
+const messages=document.getElementById('ai-messages');
+
+const input=document.getElementById('ai-input');
+
+launch.onclick=()=>{box.style.display='block';launch.style.display='none'};
+
+document.getElementById('ai-close').onclick=()=>{box.style.display='none';launch.style.display='block'};
+
+function addMessage(text,who){
+
+const div=document.createElement('div');
+
+div.className='ai-msg '+(who==='user'?'ai-user':'');
+
+div.textContent=text;
+
+messages.appendChild(div);
+
+messages.scrollTop=messages.scrollHeight;
+
+return div;
+
+}
+
+document.getElementById('ai-form').onsubmit=async function(e){
+
+e.preventDefault();
+
+const question=input.value.trim();
+
+if(!question)return;
+
+addMessage(question,'user');
+
+input.value='';
+
+const reply=addMessage('ვფიქრობ...','ai');
+
+try{
+
+const response=await fetch('/.netlify/functions/ai-assistant',{
+
+method:'POST',
+
+headers:{'Content-Type':'application/json'},
+
+body:JSON.stringify({message:question})
+
+});
+
+const data=await response.json();
+
+if(!response.ok)throw new Error(data.error||'AI ჯერ დასაკავშირებელია.');
+
+reply.textContent=data.reply||'პასუხი ვერ მივიღე.';
+
+}catch(err){
+
+reply.textContent='AI სერვერი ჯერ დასაკავშირებელია. როცა სერვერულ ფუნქციას დააკონფიგურირებ, აქ რეალური AI პასუხები გამოჩნდება.';
+
+}
+
+messages.scrollTop=messages.scrollHeight;
+
+};
+
+})();
+
 </script>
+
+</body>
 </body>
 </html>
 
