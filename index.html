@@ -1,1 +1,103 @@
 
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GamePlay — Gaming Store</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#08090d;color:white;font-family:Arial,sans-serif}
+header{padding:20px 6%;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #252535;flex-wrap:wrap;gap:15px}
+.logo{font-size:28px;font-weight:900}.logo span{color:#00e5ff}
+nav{display:flex;gap:18px}a{color:white;text-decoration:none}
+button{cursor:pointer}
+.cart,.hero button{background:linear-gradient(90deg,#914bff,#00d9ff);border:0;padding:12px 17px;border-radius:8px;color:white;font-weight:bold}
+.hero{text-align:center;padding:75px 20px;background:radial-gradient(ellipse at top,#462078,transparent 65%)}
+.hero small{color:#00e5ff;letter-spacing:3px}
+h1{font-size:clamp(40px,8vw,76px);margin:20px 0}
+h1 span{color:#00e5ff}
+.hero p{color:#b5b5c5;line-height:1.7}
+section{padding:45px 6%}
+h2{font-size:30px}
+.categories{display:flex;gap:10px;flex-wrap:wrap;margin:25px 0}
+.categories button{background:#171925;border:1px solid #38394a;color:white;padding:11px 14px;border-radius:8px}
+.categories button.active{border-color:#00e5ff;color:#00e5ff}
+input{width:100%;padding:14px;background:#151620;border:1px solid #343546;border-radius:8px;color:white;margin-bottom:25px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px}
+.product{background:#13151f;border:1px solid #292b3a;border-radius:13px;padding:20px}
+.pic{font-size:65px;text-align:center;padding:15px}
+.type{color:#00e5ff;font-size:13px}
+.product p{color:#aaa;font-size:14px}
+.price{font-size:23px;font-weight:bold;margin:20px 0}
+.add{width:100%;padding:12px;border:1px solid #7750bd;border-radius:8px;background:#28203c;color:white}
+.add:hover{background:#7440bd}
+.about{background:#11121a;text-align:center}
+footer{text-align:center;padding:30px;color:#999;border-top:1px solid #282838}
+</style>
+</head>
+<body>
+<header>
+<a class="logo" href="#">GAME<span>PLAY</span></a>
+<nav><a href="#shop">მაღაზია</a><a href="#about">ჩვენ შესახებ</a></nav>
+<button class="cart" id="cart">🛒 კალათა (0)</button>
+</header>
+
+<div class="hero">
+<small>YOUR GAMING WORLD</small>
+<h1>LEVEL UP YOUR<br><span>GAMEPLAY.</span></h1>
+<p>კომპიუტერები, ლეპტოპები, ტელეფონები და PC ნაწილები<br>ყველაფერი გეიმინგისთვის ერთ სივრცეში.</p>
+<button onclick="document.getElementById('shop').scrollIntoView()">პროდუქტების ნახვა ↓</button>
+</div>
+
+<section id="shop">
+<h2>🛍️ ჩვენი პროდუქტები</h2>
+<div class="categories" id="categories">
+<button class="active" data-cat="ყველა">ყველა</button>
+<button data-cat="კომპიუტერები">კომპიუტერები</button>
+<button data-cat="ლეპტოპები">ლეპტოპები</button>
+<button data-cat="ტელეფონები">ტელეფონები</button>
+<button data-cat="PC ნაწილები">PC ნაწილები</button>
+<button data-cat="აქსესუარები">აქსესუარები</button>
+</div>
+<input id="search" placeholder="🔎 მოძებნე პროდუქტი...">
+<div class="grid" id="products"></div>
+</section>
+
+<section class="about" id="about">
+<h2>რატომ GamePlay?</h2>
+<p>🎮 გეიმინგ ტექნიკა &nbsp; ⚡ თანამედროვე მოწყობილობები &nbsp; 🛒 მარტივი არჩევანი</p>
+</section>
+<footer>© 2026 GamePlay — ყველა უფლება დაცულია</footer>
+
+<script>
+const items=[
+["RGB Gaming PC","კომპიუტერები","🖥️",2000,"RGB განათება • გეიმინგისთვის"],
+["White Gaming PC","კომპიუტერები","🤍",2200,"თეთრი ქეისი RGB განათებით"],
+["Gaming PC Pro","კომპიუტერები","🎮",2800,"მძლავრი გეიმინგ სისტემა"],
+["Gaming Laptop","ლეპტოპები","💻",2400,"ლეპტოპი თამაშებისთვის"],
+["Everyday Laptop","ლეპტოპები","💻",1500,"სწავლისა და მუშაობისთვის"],
+["Gaming Phone","ტელეფონები","📱",1300,"ტელეფონი თამაშებისთვის"],
+["RTX Graphics Card","PC ნაწილები","🎛️",900,"ვიდეობარათი"],
+["Gaming Processor","PC ნაწილები","🧩",500,"პროცესორი"],
+["16GB RAM","PC ნაწილები","💾",180,"ოპერატიული მეხსიერება"],
+["Gaming Keyboard","აქსესუარები","⌨️",120,"RGB კლავიატურა"],
+["Gaming Mouse","აქსესუარები","🖱️",75,"გეიმინგ მაუსი"],
+["Gaming Headset","აქსესუარები","🎧",150,"გეიმინგ ყურსასმენები"]
+];
+let cat="ყველა",basket=[];
+const el=document.getElementById("products");
+function render(){
+let q=document.getElementById("search").value.toLowerCase();
+let list=items.filter(p=>(cat==="ყველა"||p[1]===cat)&&p[0].toLowerCase().includes(q));
+el.innerHTML=list.map(p=>`<article class="product"><div class="pic">${p[2]}</div><div class="type">${p[1]}</div><h3>${p[0]}</h3><p>${p[4]}</p><div class="price">${p[3].toLocaleString()} ₾</div><button class="add">+ კალათაში დამატება</button></article>`).join("");
+el.querySelectorAll(".add").forEach((b,i)=>b.onclick=()=>{basket.push(list[i]);document.getElementById("cart").textContent="🛒 კალათა ("+basket.length+")";alert(list[i][0]+" დაემატა კალათაში!")});
+}
+document.querySelectorAll("[data-cat]").forEach(b=>b.onclick=()=>{cat=b.dataset.cat;document.querySelectorAll("[data-cat]").forEach(x=>x.classList.toggle("active",x===b));render()});
+document.getElementById("search").oninput=render;
+document.getElementById("cart").onclick=()=>alert(basket.length?basket.map(p=>p[0]+" — "+p[3]+" ₾").join("\n"):"კალათა ცარიელია");
+render();
+</script>
+</body>
+</html>
+
